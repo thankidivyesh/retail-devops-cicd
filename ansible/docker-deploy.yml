@@ -1,0 +1,19 @@
+---
+- name: Deploy Docker Container
+  hosts: localhost
+  become: yes
+
+  tasks:
+
+    - name: Stop old container
+      shell: docker rm -f abc-app || true
+
+    - name: Pull latest Docker image
+      shell: docker pull thankidivyesh/abctechnologies:latest
+
+    - name: Run Docker Container
+      shell: |
+        docker run -d \
+        --name abc-app \
+        -p 8081:8080 \
+        thankidivyesh/abctechnologies:latest
