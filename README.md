@@ -85,19 +85,19 @@ retail-devops-cicd/
 
 ## Docker Commands
 
-Build Image
+## Docker Commands
 
-```
-docker build -t thankidivyesh/abctehnologies:latest .
-```
+### Build Image
 
-Run Container
-
-```
-docker run -d -p 8080:8080 thankidivyesh/abctehnologies:latest
+```bash
+docker build -t thankidivyesh/abctechnologies:latest .
 ```
 
----
+### Run Container
+
+```bash
+docker run -d -p 8080:8080 thankidivyesh/abctechnologies:latest
+```
 
 ## Kubernetes Commands
 
