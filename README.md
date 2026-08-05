@@ -2,33 +2,44 @@
 
 ## Project Overview
 
-This project demonstrates a complete DevOps CI/CD pipeline for deploying a Java Maven web application using modern DevOps tools and AWS Cloud.
+This project demonstrates a complete DevOps CI/CD pipeline for deploying a Java Maven web application using modern DevOps tools on AWS Cloud.
 
-The application is containerized using Docker, automated with Jenkins, deployed on Kubernetes (Minikube), configured using Ansible, and monitored with Prometheus and Grafana.
+The application is containerized using Docker, automated with Jenkins, deployed on Kubernetes (Minikube), configured using Ansible, and monitored using Prometheus and Grafana.
 
 ---
 
 ## Architecture
 
+```
 Developer
-↓
+    │
+    ▼
 GitHub Repository
-↓
+    │
+    ▼
 Jenkins Pipeline
-↓
+    │
+    ▼
 Maven Build
-↓
+    │
+    ▼
 Docker Image Build
-↓
+    │
+    ▼
 DockerHub Push
-↓
+    │
+    ▼
 Kubernetes Deployment
-↓
+    │
+    ▼
 Application Running
-↓
+    │
+    ▼
 Prometheus Monitoring
-↓
+    │
+    ▼
 Grafana Dashboard
+```
 
 ---
 
@@ -36,8 +47,8 @@ Grafana Dashboard
 
 - AWS EC2 (Ubuntu)
 - Git & GitHub
-- Maven
 - Java
+- Maven
 - Jenkins
 - Docker
 - DockerHub
@@ -56,72 +67,73 @@ Grafana Dashboard
 retail-devops-cicd/
 │
 ├── src/
-├── pom.xml
+├── ansible/
+│   ├── inventory
+│   └── docker-deploy.yml
+├── screenshots/
 ├── Dockerfile
 ├── Jenkinsfile
 ├── deployment.yaml
 ├── service.yaml
-├── ansible/
-│   ├── inventory
-│   └── docker-deploy.yml
-├── .gitignore
-└── README.md
+├── pom.xml
+├── README.md
+└── .gitignore
 ```
 
 ---
 
 ## CI/CD Pipeline
 
-1. Developer pushes code to GitHub
-2. Jenkins pulls latest source code
-3. Maven builds the application
-4. Docker builds the image
-5. Docker image pushed to DockerHub
-6. Kubernetes deploys application
-7. Prometheus collects metrics
-8. Grafana displays monitoring dashboard
+1. Developer pushes code to GitHub.
+2. Jenkins pulls the latest source code.
+3. Maven builds and packages the application.
+4. Docker builds the application image.
+5. Docker image is pushed to DockerHub.
+6. Kubernetes deploys the application.
+7. Prometheus collects application metrics.
+8. Grafana displays monitoring dashboards.
 
 ---
 
 ## Docker Commands
 
-## Docker Commands
-
-### Build Image
+### Build Docker Image
 
 ```bash
 docker build -t thankidivyesh/abctechnologies:latest .
 ```
 
-### Run Container
+### Run Docker Container
 
 ```bash
 docker run -d -p 8080:8080 thankidivyesh/abctechnologies:latest
 ```
 
+---
+
 ## Kubernetes Commands
 
-Deployment
+### Deploy Application
 
-```
+```bash
 kubectl apply -f deployment.yaml
 ```
 
-Service
+### Create Service
 
-```
+```bash
 kubectl apply -f service.yaml
 ```
 
-Check Pods
+### Check Pods
 
-```
+```bash
 kubectl get pods
 ```
 
-Check Services
+### Check Services
 
-```
+```bash
 kubectl get svc
 ```
 
@@ -129,15 +141,15 @@ kubectl get svc
 
 ## Ansible Deployment
 
-Inventory
+### Inventory
 
-```
+```text
 ansible/inventory
 ```
 
-Run Playbook
+### Run Playbook
 
-```
+```bash
 ansible-playbook -i ansible/inventory ansible/docker-deploy.yml
 ```
 
@@ -147,23 +159,40 @@ ansible-playbook -i ansible/inventory ansible/docker-deploy.yml
 
 ### Prometheus
 
-Collects Kubernetes and Application Metrics.
+- Collects Kubernetes and application metrics.
+- Monitors CPU, Memory, Network and Node Exporter metrics.
 
 ### Grafana
 
-Visualizes Metrics using Dashboards.
+- Visualizes Prometheus metrics.
+- Displays dashboards for Kubernetes and system monitoring.
 
 ---
 
 ## Project Features
 
-- Continuous Integration
-- Continuous Deployment
+- Continuous Integration (CI)
+- Continuous Deployment (CD)
 - Docker Containerization
 - Kubernetes Deployment
-- Infrastructure Automation
+- Infrastructure Automation with Ansible
 - Monitoring using Prometheus
-- Dashboard using Grafana
+- Dashboard Visualization using Grafana
+
+---
+
+## Screenshots
+
+Project screenshots are available inside the **screenshots/** folder.
+
+- GitHub Repository
+- Jenkins Pipeline
+- Docker Images
+- Kubernetes Pods
+- Kubernetes Services
+- Prometheus Dashboard
+- Grafana Dashboard
+- Application Output
 
 ---
 
@@ -173,15 +202,19 @@ Visualizes Metrics using Dashboards.
 - ArgoCD
 - SonarQube
 - Trivy
-- Nexus
+- Nexus Repository
 - AWS EKS
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 **Thanki Divyesh**
 
 📧 Email: thankidivyesh@zohomail.in
 
-🔗 GitHub: https://github.com/thankidivyesh
+📍 Location: Gujarat, India
+
+🔗 GitHub Repository:
+
+https://github.com/thankidivyesh/retail-devops-cicd
