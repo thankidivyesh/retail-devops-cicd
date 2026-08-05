@@ -1,6 +1,3 @@
-# abctechnologies code
-"# assignment1" 
-
 # Retail DevOps CI/CD Pipeline Project
 
 ## Project Overview
@@ -183,7 +180,7 @@ Visualizes Metrics using Dashboards.
 
 ## 👨‍💻 Author
 
-**Divyeshkumar Thanki**
+**Thanki Divyesh**
 
 📧 Email: thankidivyesh@zohomail.in
 
