@@ -213,8 +213,11 @@ Project screenshots are available inside the **screenshots/** folder.
 
 📧 Email: thankidivyesh@zohomail.in
 
-📍 Location: Gujarat, India
+📍 Location: Jamnagar,Gujarat, India
 
 🔗 GitHub Repository:
 
 https://github.com/thankidivyesh/retail-devops-cicd
+
+🔗 LinkedIn:
+https://linkedin.com/in/thanki-divyesh-10422341b
