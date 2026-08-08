@@ -196,17 +196,6 @@ Project screenshots are available inside the **screenshots/** folder.
 
 ---
 
-## Future Enhancements
-
-- Terraform
-- ArgoCD
-- SonarQube
-- Trivy
-- Nexus Repository
-- AWS EKS
-
----
-
 ## Author
 
 **Thanki Divyesh**
