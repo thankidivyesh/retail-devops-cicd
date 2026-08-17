@@ -2,11 +2,11 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "abctehnologies"
-        DOCKERHUB_USER = "thankidivyesh"
-        CONTAINER_NAME = "abc-app"
-        APP_PORT = "8081"
-    }
+    IMAGE_NAME = "abctechnologies"
+    DOCKERHUB_USER = "thankidivyesh"
+    CONTAINER_NAME = "abc-app"
+    APP_PORT = "8081"
+}
 
     stages {
 
