@@ -31,7 +31,6 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh '''
-<<<<<<< HEAD
                     docker build \
                     -t ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER} \
                     .
@@ -39,10 +38,9 @@ pipeline {
                     docker tag \
                     ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER} \
                     ${DOCKERHUB_USER}/${IMAGE_NAME}:latest
-=======
                 docker build -t ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER} .
                 docker tag ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER} ${DOCKERHUB_USER}/${IMAGE_NAME}:latest
->>>>>>> c57adab (Add Kubernetes deployment to Jenkins pipeline)
+                (Add Kubernetes deployment to Jenkins pipeline)
                 '''
             }
         }
