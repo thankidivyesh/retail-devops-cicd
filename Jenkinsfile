@@ -4,8 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = "abctechnologies"
         DOCKERHUB_USER = "thankidivyesh"
-        CONTAINER_NAME = "abc-app"
-        APP_PORT = "8081"
+        KUBECONFIG = "/var/lib/jenkins/.kube/config"
     }
 
     stages {
@@ -32,6 +31,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh '''
+<<<<<<< HEAD
                     docker build \
                     -t ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER} \
                     .
@@ -39,6 +39,10 @@ pipeline {
                     docker tag \
                     ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER} \
                     ${DOCKERHUB_USER}/${IMAGE_NAME}:latest
+=======
+                docker build -t ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER} .
+                docker tag ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER} ${DOCKERHUB_USER}/${IMAGE_NAME}:latest
+>>>>>>> c57adab (Add Kubernetes deployment to Jenkins pipeline)
                 '''
             }
         }
@@ -50,22 +54,46 @@ pipeline {
                     url: 'https://index.docker.io/v1/'
                 ]) {
                     sh '''
+<<<<<<< HEAD
                         docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER}
                         docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:latest
+=======
+                    docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER}
+                    docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:latest
+>>>>>>> c57adab (Add Kubernetes deployment to Jenkins pipeline)
                     '''
                 }
             }
         }
 
-        stage('Deploy Container') {
+        stage('Deploy to Kubernetes') {
             steps {
                 sh '''
+<<<<<<< HEAD
                     docker rm -f ${CONTAINER_NAME} || true
 
                     docker run -d \
                     --name ${CONTAINER_NAME} \
                     -p ${APP_PORT}:8080 \
                     ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER}
+=======
+                kubectl --kubeconfig=${KUBECONFIG} apply -f deployment.yaml
+                kubectl --kubeconfig=${KUBECONFIG} apply -f service.yaml
+
+                kubectl --kubeconfig=${KUBECONFIG} rollout restart deployment/abc-deployment
+
+                kubectl --kubeconfig=${KUBECONFIG} rollout status deployment/abc-deployment --timeout=120s
+                '''
+            }
+        }
+
+        stage('Verify Kubernetes') {
+            steps {
+                sh '''
+                kubectl --kubeconfig=${KUBECONFIG} get nodes
+                kubectl --kubeconfig=${KUBECONFIG} get pods
+                kubectl --kubeconfig=${KUBECONFIG} get services
+>>>>>>> c57adab (Add Kubernetes deployment to Jenkins pipeline)
                 '''
             }
         }
@@ -73,11 +101,11 @@ pipeline {
 
     post {
         success {
-            echo 'Pipeline completed successfully.'
+            echo 'CI/CD Pipeline completed successfully!'
         }
 
         failure {
-            echo 'Pipeline failed.'
+            echo 'Pipeline failed. Check Console Output.'
         }
     }
 }
