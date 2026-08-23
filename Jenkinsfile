@@ -1,11 +1,11 @@
-cat > Jenkinsfile <<'EOF'
 pipeline {
     agent any
 
     environment {
         IMAGE_NAME = "abctechnologies"
         DOCKERHUB_USER = "thankidivyesh"
-        KUBE_CONFIG = "/var/lib/jenkins/.kube/config"
+        CONTAINER_NAME = "abc-app"
+        APP_PORT = "8081"
     }
 
     stages {
@@ -24,16 +24,20 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER} .'
-                sh 'docker tag ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER} ${DOCKERHUB_USER}/${IMAGE_NAME}:latest'
+                sh '''
+                    docker build -t ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER} .
+                    docker tag ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER} ${DOCKERHUB_USER}/${IMAGE_NAME}:latest
+                '''
             }
         }
 
         stage('Push Docker Image') {
             steps {
                 withDockerRegistry([credentialsId: 'dockerhub-creds', url: '']) {
-                    sh 'docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER}'
-                    sh 'docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:latest'
+                    sh '''
+                        docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER}
+                        docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:latest
+                    '''
                 }
             }
         }
@@ -41,13 +45,19 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 sh '''
-                    export KUBECONFIG=${KUBE_CONFIG}
-
                     kubectl apply -f deployment.yaml
                     kubectl apply -f service.yaml
+                    kubectl rollout restart deployment abc-deployment
+                    kubectl rollout status deployment abc-deployment
+                '''
+            }
+        }
 
-                    kubectl rollout status deployment/abc-deployment --timeout=120s
-                    kubectl get pods
+        stage('Verify Kubernetes') {
+            steps {
+                sh '''
+                    kubectl get nodes
+                    kubectl get pods -o wide
                     kubectl get svc
                 '''
             }
@@ -64,4 +74,3 @@ pipeline {
         }
     }
 }
-EOF
