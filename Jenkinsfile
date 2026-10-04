@@ -1,39 +1,62 @@
+pipeline {
+    agent any
 
-pipeline
-{
-	agent any
-	stages
-	{
-		stage('Checkout')
-		{
-			steps
-			{
-				git  'https://github.com/thankidivyesh/retail-devops-cicd.git'
-			}
-		}
-		
-		stage('Compile')
-		{
-			steps
-			{
-				sh 'mvn compile'
-			}
-		}
+    environment {
+        IMAGE_NAME = "abctehnologies"
+        DOCKERHUB_USER = "thankidivyesh"
+        CONTAINER_NAME = "abc-app"
+        APP_PORT = "8081"
+    }
 
-		stage('Test')
-		{
-			steps
-			{
-				sh 'mvn test'
-			}
-		}
+    stages {
 
-		stage('Build')
-		{
-			steps
-			{
-				sh 'mvn package'
-			}
-		}
-     }
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Maven Project') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER} .'
+                sh 'docker tag ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER} ${DOCKERHUB_USER}/${IMAGE_NAME}:latest'
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                withDockerRegistry([credentialsId: 'dockerhub-creds']) {
+                    sh 'docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER}'
+                    sh 'docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:latest'
+                }
+            }
+        }
+
+        stage('Deploy Container') {
+            steps {
+                sh '''
+                docker rm -f ${CONTAINER_NAME} || true
+                docker run -d \
+                  --name ${CONTAINER_NAME} \
+                  -p ${APP_PORT}:8080 \
+                  ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER}
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully.'
+        }
+        failure {
+            echo 'Pipeline failed.'
+        }
+    }
 }
