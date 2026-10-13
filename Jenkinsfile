@@ -2,50 +2,51 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "abctehnologies"
-        DOCKERHUB_USER = "thankidivyesh"
-        CONTAINER_NAME = "abc-app"
-        APP_PORT = "8081"
+        IMAGE_NAME = "thankidivyesh/abctechnologies"
+        KUBECONFIG = "/var/lib/jenkins/.kube/config"
     }
 
     stages {
-
         stage('Checkout Code') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Build Maven Project') {
+        stage('Maven Build') {
             steps {
                 sh 'mvn clean package'
+                sh 'test -f target/ABCtechnologies-1.0.war'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER} .'
-                sh 'docker tag ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER} ${DOCKERHUB_USER}/${IMAGE_NAME}:latest'
+                sh 'docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} .'
             }
         }
 
         stage('Push Docker Image') {
             steps {
                 withDockerRegistry([credentialsId: 'dockerhub-creds']) {
-                    sh 'docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER}'
-                    sh 'docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:latest'
+                    sh 'docker push ${IMAGE_NAME}:${BUILD_NUMBER}'
                 }
             }
         }
 
-        stage('Deploy Container') {
+        stage('Load Image into Kind') {
+            steps {
+                sh 'kind load docker-image ${IMAGE_NAME}:${BUILD_NUMBER} --name retail-cluster'
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
             steps {
                 sh '''
-                docker rm -f ${CONTAINER_NAME} || true
-                docker run -d \
-                  --name ${CONTAINER_NAME} \
-                  -p ${APP_PORT}:8080 \
-                  ${DOCKERHUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER}
+                    kubectl set image deployment/abc-deployment abc-app=${IMAGE_NAME}:${BUILD_NUMBER}
+                    kubectl rollout status deployment/abc-deployment --timeout=180s
+                    kubectl get pods
+                    kubectl get svc abc-service
                 '''
             }
         }
@@ -53,10 +54,10 @@ pipeline {
 
     post {
         success {
-            echo 'Pipeline completed successfully.'
+            echo 'CI/CD pipeline completed successfully.'
         }
         failure {
-            echo 'Pipeline failed.'
+            echo 'CI/CD pipeline failed. Check the stage logs.'
         }
     }
 }

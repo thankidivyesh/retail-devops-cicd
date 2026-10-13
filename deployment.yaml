@@ -1,3 +1,4 @@
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -13,7 +14,9 @@ spec:
         app: abc-app
     spec:
       containers:
-      - name: abc-app
-        image: thankidivyesh/abctechnologies:latest
-        ports:
-        - containerPort: 8080
+        - name: abc-app
+          image: thankidivyesh/abctechnologies:4
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+
