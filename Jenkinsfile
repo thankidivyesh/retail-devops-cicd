@@ -3,8 +3,8 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "thankidivyesh/abctechnologies"
-        KUBECONFIG = "/var/lib/jenkins/.kube/config"
+        IMAGE_NAME = 'thankidivyesh/abctechnologies'
+        KUBECONFIG = '/var/lib/jenkins/.kube/config'
     }
 
     stages {
@@ -29,9 +29,10 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                withDockerRegistry(
-                    [credentialsId: 'mydockerhubcred']
-                ) {
+                withDockerRegistry([
+                    url: 'https://index.docker.io/v1/',
+                    credentialsId: 'mydockerhubcred'
+                ]) {
                     sh 'docker push ${IMAGE_NAME}:${BUILD_NUMBER}'
                 }
             }
@@ -67,7 +68,6 @@ pipeline {
         success {
             echo 'CI/CD pipeline completed successfully!'
         }
-
         failure {
             echo 'Pipeline failed. Check Console Output.'
         }
