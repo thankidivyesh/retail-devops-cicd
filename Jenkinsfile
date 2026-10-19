@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -28,7 +29,9 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                withDockerRegistry([credentialsId: 'dockerhub-creds']) {
+                withDockerRegistry(
+                    [credentialsId: 'mydockerhubcred']
+                ) {
                     sh 'docker push ${IMAGE_NAME}:${BUILD_NUMBER}'
                 }
             }
@@ -36,16 +39,24 @@ pipeline {
 
         stage('Load Image into Kind') {
             steps {
-                sh 'kind load docker-image ${IMAGE_NAME}:${BUILD_NUMBER} --name retail-cluster'
+                sh '''
+                    kind load docker-image ${IMAGE_NAME}:${BUILD_NUMBER} \
+                      --name retail-cluster
+                '''
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
                 sh '''
-                    kubectl set image deployment/abc-deployment abc-app=${IMAGE_NAME}:${BUILD_NUMBER}
-                    kubectl rollout status deployment/abc-deployment --timeout=180s
+                    kubectl set image deployment/abc-deployment \
+                      abc-app=${IMAGE_NAME}:${BUILD_NUMBER}
+
+                    kubectl rollout status deployment/abc-deployment \
+                      --timeout=180s
+
                     kubectl get pods
+                    kubectl get deployments
                     kubectl get svc abc-service
                 '''
             }
@@ -54,10 +65,11 @@ pipeline {
 
     post {
         success {
-            echo 'CI/CD pipeline completed successfully.'
+            echo 'CI/CD pipeline completed successfully!'
         }
+
         failure {
-            echo 'CI/CD pipeline failed. Check the stage logs.'
+            echo 'Pipeline failed. Check Console Output.'
         }
     }
 }
